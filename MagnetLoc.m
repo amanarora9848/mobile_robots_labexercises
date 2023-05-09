@@ -66,9 +66,12 @@ for i = 2 : nbLoops
     
     % Calculate linear approximation of the system equation
     A = eye(3);
+    A(1,3) = -U(1)*sin(X(3));
+    A(2,3) = U(1)*cos(X(3));
+
     B = [
-        cos(U(2)), -sin(U(2));
-        sin(U(2)), cos(U(2));
+        cos(X(3)), 0;
+        sin(X(3)), 0;
         0, 1
     ] ;
        
@@ -119,14 +122,17 @@ for i = 2 : nbLoops
         % The expected measurement are the two coordinates of the real 
         % magnet in the robot frame.
         Yhat = mRealMagnet(1:2) ;
-        
-        C = [
-            -cos(X(3)), -sin(X(3)), -sin(X(3))+cos(X(3))+X(1)*sin(X(3))-X(2)*cos(X(3));
-            sin(X(3)), -cos(X(3)), cos(X(3))-sin(X(3))+X(1)*cos(X(3))+X(2)*sin(X(3));
-            0, 0, 0
-        ] .* oMeasMagnet.' ;
+  
 
-        C = C(1:2, 1:3);
+
+        C = zeros(2,3);
+
+        C(1,1) = -cos(X(3));
+        C(1,2) = -sin(X(3));
+        C(1,3) = -(oRealMagnet(1)-X(1))*sin(X(3))+(oRealMagnet(2)-X(2))*cos(X(3));
+        C(2,1) = sin(X(3));
+        C(2,2) = -cos(X(3));
+        C(2,3) = -(oRealMagnet(1)-X(1))*cos(X(3))-(oRealMagnet(2)-X(2))*sin(X(3));
                       
         innov = Y - Yhat ;   
         dMaha = sqrt( innov.' * inv( C*P*C.' + Qgamma) * innov ) ;
