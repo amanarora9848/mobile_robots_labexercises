@@ -1,12 +1,17 @@
-% Set the parameters which have the "Determined by student" comment to tune
+% Set the parameters which have the "Determined by studen" comment to tune
 % the Kalman filter. Do not modify anything else in this file.
+
+global Pinit Qgamma Qbeta mahaThreshold ;
 
 % Uncertainty on initial position of the robot.
 
-sigmaX     = 10/3 ;         % Determined by student
+sigmaX     =10/3;         % Determined by student
 sigmaY     = 5 ;         % Determined by student
-sigmaTheta = deg2rad(5) ;   % Determined by student
-Pinit = diag( [sigmaX^2 sigmaY^2 sigmaTheta^2] ) ;
+sigmaTheta = 5*pi/180;     % Determined by student
+sigmaRL    = 1 ; 
+sigmaRR    = sigmaRL ;
+Pinit = diag( [ sigmaX^2 sigmaY^2 sigmaTheta^2 ...
+                sigmaRL^2 sigmaRR^2 ] ) ;
 
 
 % Measurement noise.
@@ -20,14 +25,15 @@ Qgamma = diag( [sigmaXmeasurement^2 sigmaYmeasurement^2] ) ;
 
 % Input noise
 
-
-sigmaTuning =0.1 ; % For tuning 0.1 is good 
+sigmaTuning = 0.1 ; 
 Qwheels = sigmaTuning^2 * eye(2) ;
-Qbeta   = jointToCartesian * Qwheels * jointToCartesian.' ; 
+Qbeta   = Qwheels ; 
 
 % State noise
  
-Qalpha = zeros(3) ;
+sigmaR = 0 ; 
+Qalpha = [  zeros(3)    zeros(3,2)    ;
+           zeros(2,3) sigmaR^2*eye(2) ] ;
 
 % Mahalanobis distance threshold
 
